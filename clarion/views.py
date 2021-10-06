@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 
-from .forms import ReviewForm, UserCreateForm
+from .forms import ReviewForm, UserCreateForm, PageForm
 from .models import Category, Page
 from .tasks import parser_clarion
 
@@ -34,11 +35,34 @@ def show_categories(categories):
             categories_list.append({'category': category.name, 'children': tree})
     return categories_list
 
+def parse_category(request):
+    Category.objects.all().delete()
+    Page.objects.all().delete()
+    parser_clarion.delay()
+    messages.success(request, 'Парсинг начат')
+    return redirect('clarion:index')
+
 
 
 def index(request):
     # categories = show_categories(Category.objects.filter(parent_category=None))
     return render(request, 'clarion/index.html',)
+
+
+def category_pages(request, pk):
+    category = Category.objects.filter(pk=pk).first()
+    if category:
+        pages = category.pages.all()
+        paginator = Paginator(pages, 20)
+        page = request.GET.get('page')
+        try:
+            pages = paginator.page(page)
+        except PageNotAnInteger:
+            pages = paginator.page(1)
+        except EmptyPage:
+            pages = paginator.page(paginator.num_pages)
+
+        return render(request, 'clarion/page/list.html', {'category': category, 'pages': pages})
 
 
 def category_detail(request, pk):
@@ -49,6 +73,19 @@ def category_detail(request, pk):
         return redirect(reverse('clarion:page_detail', args=[page.id]))
     return redirect('clarion:index')
 
+
+def page_edit(request, pk):
+    page = Page.objects.filter(pk=pk).first()
+    if request.method == 'POST':
+        form = PageForm(request.POST, instance=page)
+        if form.is_valid():
+            form.save()
+        else:
+            show_form_errors(request, form.errors)
+        return redirect(reverse('clarion:page_detail', args=[page.id]))
+    if page:
+        return render(request, 'clarion/page/edit.html', {'page': page})
+    return redirect('clarion:index')
 
 def page_detail(request, pk):
     page = Page.objects.filter(pk=pk).first()
@@ -71,13 +108,6 @@ def page_detail(request, pk):
                                                         'commented_pages': commented_pages, 'related_pages': related_pages,
                                                         })
 
-def parse_category(request):
-    Category.objects.all().delete()
-    Page.objects.all().delete()
-    parser_clarion.delay()
-    messages.success(request, 'Парсинг начат')
-    return redirect('clarion:index')
-
 
 def registration(request):
     if request.method == 'POST':
@@ -89,6 +119,7 @@ def registration(request):
         else:
             show_form_errors(request, form.errors)
     return render(request, 'registration/registration.html')
+
 
 def cabinet(request):
     user = request.user

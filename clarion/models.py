@@ -30,7 +30,7 @@ class Page(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название')
     url = models.URLField(max_length=500, null=True, blank=True, verbose_name='Ссылка')
 
-    content = models.TextField(null=True, blank=True,verbose_name='Контент')
+    content = models.TextField(null=True, blank=True, verbose_name='Контент')
     html = models.TextField(null=True, blank=True, verbose_name='HTML страницы')
 
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.CASCADE, related_name='pages', verbose_name='Категория')

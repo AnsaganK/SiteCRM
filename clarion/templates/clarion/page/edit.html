@@ -1,0 +1,29 @@
+{% extends 'clarion/base.html' %}
+
+{% load static clarion_tags %}
+
+{% block title %}
+    {{ page.name }}
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+{% endblock %}
+
+{% block content %}
+    <section id="entity_section" class="entity_section">
+<div class="container">
+<div class="row">
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" name="name" value="{{ page.name }}">
+        <button type="submit" class="btn btn-lg orange">edit</button>
+    </form>
+</div>
+<!-- row -->
+
+</div>
+<!-- container -->
+
+</section>
+{% endblock %}

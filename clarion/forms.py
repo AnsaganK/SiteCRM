@@ -2,7 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from clarion.models import Review
+from clarion.models import Review, Page
+
+
+class PageForm(forms.ModelForm):
+    class Meta:
+        model = Page
+        fields = ['name']
 
 
 class ReviewForm(forms.ModelForm):
