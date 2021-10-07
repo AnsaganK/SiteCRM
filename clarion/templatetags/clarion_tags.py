@@ -1,4 +1,5 @@
 from django import template
+from django.template.defaultfilters import safe
 
 register = template.Library()
 
@@ -27,10 +28,23 @@ def show_categories(categories):
 
 @register.filter(name='show_rating')
 def show_rating(rating):
-    full_star_count = '<i class="fa fa-star"></i>'*int(rating)
-    empty_star_count = '<i class="fa fa-star-o"></i>'*(5-int(rating))
-    return full_star_count+empty_star_count
+    full_star_count = '<i class="fa fa-star"></i>'*round(rating)
+    empty_star_count = '<i class="fa fa-star-o"></i>'*(5-round(rating))
+    return safe(full_star_count + empty_star_count)
 
+
+
+@register.filter(name='category_breadcrumbs')
+def category_breadcrumbs(category):
+    breadcrumbs = ''
+    parent = category.parent_category
+    if parent:
+        print(parent)
+        breadcrumbs += category_breadcrumbs(parent) + f'<li><a href="{category.get_absolute_url()}">{category.name}</a></li>'
+
+    else:
+        return f'<li><a href="{category.get_absolute_url()}">{category.name}</a></li>'
+    return breadcrumbs
 
 @register.filter(name='isWriteReview')
 def isWriteReview(user, page):

@@ -1,10 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'clarion/base.html' %}
+{% load static %}
+{% block title %}
+    Create News
+{% endblock %}
 
-</body>
-</html>
+{% block script %}
+    <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+{% endblock %}
+
+{% block content %}
+    <section id="entity_section" class="entity_section">
+        <div class="container">
+            <div class="row">
+                <form action="" class="col-md-12" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div style="display:flex;justify-content:center;">
+                        <input name="img" id="file" type="file"  onchange="onFileSelected(event, this)" style="display:none;">
+                        <label for="file" style="border-radius:100%;">
+                            <img id="image" src="{% static 'img/no_img.png' %}" style="width:230px;cursor:pointer;    border: 1px solid#b5b5b5;" alt="">
+                        </label>
+                    </div>
+                    <label for="">Name</label>
+                    <input type="text" required class="form-control" name="name">
+                    <br>
+                    <label for="">Content</label>
+                    <textarea name="content" id="page_content"></textarea>
+                    <hr>
+                    <button type="submit" class="btn btn-lg pink">create page</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#page_content'))
+            .catch(error => {
+                console.error(error);
+            } );
+
+            function onFileSelected(event, r) {
+      var selectedFile = event.target.files[0];
+        console.log(selectedFile);
+      var reader = new FileReader();
+
+      var imgtag = document.getElementById("image");
+
+      if (r.files.length === 0){
+        imgtag.src = "{% static 'img/no_img.png' %}";
+      }
+
+      imgtag.title = selectedFile.name;
+
+      reader.onload = function(event) {
+        imgtag.src = event.target.result;
+      };
+
+      reader.readAsDataURL(selectedFile);
+         console.log(selectedFile);
+    }
+    </script>
+
+{% endblock %}

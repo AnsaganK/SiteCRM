@@ -1,10 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'clarion/base.html' %}
 
-</body>
-</html>
+{% load static clarion_tags %}
+
+{% block title %}
+    {{ category.name }}
+{% endblock %}
+
+{% block content %}
+    <section id="entity_section" class="entity_section">
+        <div class="container">
+            <div class="row">
+                <form action="" class="col-md-12" method="post">
+                    {% csrf_token %}
+                    <label for="">Name</label>
+                    <input type="text" required class="form-control" value="{{ category.name }}" name="name">
+                    <br>
+                    <label for="">Base page</label>
+                    <br>
+
+                    <hr>
+                    <button type="submit" class="btn btn-lg pink">edit page</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#page_content'))
+            .catch(error => {
+                console.error(error);
+            } );
+
+    function onFileSelected(event, r) {
+      var selectedFile = event.target.files[0];
+        console.log(selectedFile);
+      var reader = new FileReader();
+
+      var imgtag = document.getElementById("image");
+
+      if (r.files.length === 0){
+          {% if page.img %}
+
+        imgtag.src = "{{ page.img.url }}";
+              {% else %}
+        imgtag.src = "{% static 'img/no_img.png' %}";
+          {% endif %}
+      }
+
+      imgtag.title = selectedFile.name;
+
+      reader.onload = function(event) {
+        imgtag.src = event.target.result;
+      };
+
+      reader.readAsDataURL(selectedFile);
+         console.log(selectedFile);
+    }
+    </script>
+{% endblock %}

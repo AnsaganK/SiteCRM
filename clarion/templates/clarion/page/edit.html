@@ -12,18 +12,62 @@
 
 {% block content %}
     <section id="entity_section" class="entity_section">
-<div class="container">
-<div class="row">
-    <form action="" method="post">
-        {% csrf_token %}
-        <input type="text" name="name" value="{{ page.name }}">
-        <button type="submit" class="btn btn-lg orange">edit</button>
-    </form>
-</div>
-<!-- row -->
+        <div class="container">
+            <div class="row">
+                <form action="" class="col-md-12" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div style="display:flex;justify-content:center;">
+                        <input name="img" id="file" type="file"  onchange="onFileSelected(event, this)" style="display:none;">
+                        <label for="file" style="border-radius:100%;">
+                            <img id="image" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" style="width:230px;cursor:pointer;    border: 1px solid#b5b5b5;" alt="">
+                        </label>
+                    </div>
+                    <label for="">Name</label>
+                    <input type="text" required class="form-control" value="{{ page.name }}" name="name">
+                    <br>
+                    <label for="">Content</label>
+                    <textarea name="content" id="page_content">{{ page.content }}</textarea>
+                    <br>
 
-</div>
-<!-- container -->
+                    <hr>
+                    <button type="submit" class="btn btn-lg pink">edit page</button>
+                </form>
+            </div>
+        </div>
+    </section>
 
-</section>
+
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#page_content'))
+            .catch(error => {
+                console.error(error);
+            } );
+
+    function onFileSelected(event, r) {
+      var selectedFile = event.target.files[0];
+        console.log(selectedFile);
+      var reader = new FileReader();
+
+      var imgtag = document.getElementById("image");
+
+      if (r.files.length === 0){
+          {% if page.img %}
+
+        imgtag.src = "{{ page.img.url }}";
+              {% else %}
+        imgtag.src = "{% static 'img/no_img.png' %}";
+          {% endif %}
+      }
+
+      imgtag.title = selectedFile.name;
+
+      reader.onload = function(event) {
+        imgtag.src = event.target.result;
+      };
+
+      reader.readAsDataURL(selectedFile);
+         console.log(selectedFile);
+    }
+    </script>
 {% endblock %}

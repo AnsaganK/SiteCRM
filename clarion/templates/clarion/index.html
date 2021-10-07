@@ -1,5 +1,5 @@
 {% extends 'clarion/base.html' %}
-{% load clarion_tags %}
+{% load static clarion_tags %}
 
 {% block title %}
     Главная
@@ -7,8 +7,100 @@
 
 {% block content %}
 
+    <section id="feature_news_section" class="feature_news_section">
 
-    <a href="{% url 'clarion:parse_category' %}">Спарсить категории</a>
+
+    <div class="container">
+        <div class="row">
+            {% with last_pages.first as page %}
+
+            <div class="col-md-7">
+                <div class="feature_article_wrapper">
+                    <div class="feature_article_img">
+                        <img class="img-responsive top_static_article_img" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top">
+                    </div>
+                    <!-- feature_article_img -->
+
+                    <div class="feature_article_inner">
+                        <div class="tag_lg red"><a href="{{ page.get_absolute_url }}">Last news</a></div>
+                        <div class="feature_article_title">
+                            <h1><a href="" target="_self">{{ page.name }} </a></h1>
+                        </div>
+                        <!-- feature_article_title -->
+
+                        <div class="feature_article_date"><a href="#" target="_self">{{ page.date_create }}</a></div>
+                        <!-- feature_article_date -->
+
+                        <div class="feature_article_content">
+                            {{ page.content|striptags|truncatechars:50 }}
+                        </div>
+                        <!-- feature_article_content -->
+
+                        <div class="article_social">
+                            <span><i class="fa fa-comments-o"></i><a href="#">{{ page.revirews.count }} </a>Comments</span>
+                        </div>
+                        <!-- article_social -->
+
+                    </div>
+                    <!-- feature_article_inner -->
+
+                </div>
+                <!-- feature_article_wrapper -->
+
+            </div>
+
+            {% endwith %}
+            <!-- col-md-7 -->
+
+        {% for page in last_pages|slice:'1:' %}
+            <div class="col-md-5">
+                <div class="{% if forloop.last %}feature_static_last_wrapper{% else %}feature_static_wrapper{% endif %}">
+                    <div class="feature_article_img">
+                        <img class="img-responsive" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top">
+                    </div>
+                    <!-- feature_article_img -->
+
+                    <div class="feature_article_inner">
+                        <div class="tag_lg purple"><a href="">Last News</a></div>
+                        <div class="feature_article_title">
+                            <h1><a href="{{ page.get_absolute_url }}" target="_self">{{ page.name }}</a></h1>
+                        </div>
+                        <!-- feature_article_title -->
+
+                        <div class="feature_article_date"><a href="#" target="_self">{{ page.date_create }}</a></div>
+                        <!-- feature_article_date -->
+
+                        <div class="feature_article_content">
+                            {{ page.content|striptags|truncatechars:50 }}
+                        </div>
+                        <!-- feature_article_content -->
+
+                        <div class="article_social">
+                            <span><i class="fa fa-comments-o"></i><a href="#">{{ page.reviews.count }} </a>Comments</span>
+                        </div>
+                        <!-- article_social -->
+
+                    </div>
+                    <!-- feature_article_inner -->
+
+                </div>
+                <!-- feature_static_wrapper -->
+
+            </div>
+            <br>
+        {% endfor %}
+            <!-- col-md-5 -->
+
+            <!-- col-md-5 -->
+
+        </div>
+        <!-- Row -->
+
+    </div>
+    <!-- container -->
+
+</section>
+
 {% endblock %}
 
     {% for category in categories %}

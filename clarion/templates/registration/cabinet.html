@@ -4,6 +4,34 @@
     Cabinet
 {% endblock %}
 
+
 {% block content %}
-    {{ user.username }}
+    <a href="{% url 'clarion:parse_category' %}" class="btn-lg pink" style="
+    margin: 20px auto;
+    text-align: center;
+    display: block;
+    width: fit-content;
+">Спарсить категории</a>
+    <form action="" class="custom_form" method="post">
+            {% csrf_token %}
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Логин</label>
+            <input type="text" required class="form-control" name="username" value="{{ user.username }}">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Фамилия</label>
+            <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Имя</label>
+            <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Почта</label>
+            <input type="email" class="form-control" name="email" value="{{ user.email }}">
+          </div>
+        <div class="centered centered_flex">
+            <button type="submit" class="btn btn-warning">Изменить</button>
+        </div>
+    </form>
 {% endblock %}

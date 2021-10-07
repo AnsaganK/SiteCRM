@@ -1,0 +1,34 @@
+{% load static %}
+
+<div class="col-md-6">
+    <div class="category_article_body">
+        <div class="top_article_img">
+            <a href="{{ page.get_absolute_url }}"><img class="img-responsive" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top"></a>
+        </div>
+        <!-- top_article_img -->
+
+        <div class="category_article_title">
+            <h5><a href="{{ page.get_absolute_url }}">{{ page.name|truncatechars:15 }}</a></h5>
+        </div>
+        <!-- category_article_title -->
+
+        <div class="article_date">
+            <a href="#">{{ page.date_create }}</a>
+        </div>
+        <!-- article_date -->
+
+        <div class="category_article_content">
+            {{ page.content|striptags|truncatechars:50 }}
+        </div>
+        <!-- category_article_content -->
+
+        <div class="article_social">
+            {#                                        <span><a href="#"><i class="fa fa-share-alt"></i>424 </a> Shares</span>#}
+            <span><i class="fa fa-comments-o"></i><a href="#">{{ page.reviews.count }}</a> Comments</span>
+        </div>
+        <!-- article_social -->
+
+    </div>
+    <!-- category_article_body -->
+
+</div>

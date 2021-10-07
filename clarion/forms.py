@@ -8,7 +8,7 @@ from clarion.models import Review, Page
 class PageForm(forms.ModelForm):
     class Meta:
         model = Page
-        fields = ['name']
+        fields = ['name', 'img', 'content']
 
 
 class ReviewForm(forms.ModelForm):
@@ -21,3 +21,8 @@ class UserCreateForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'password1']
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']

@@ -1,0 +1,23 @@
+{% extends 'clarion/base.html' %}
+
+{% block title %}
+    Confirm delete
+{% endblock %}
+
+{% block content %}
+        <section id="entity_section" class="entity_section">
+            <div class="container">
+                    <h1 style="text-align: center; width: 300px; margin: 10px auto;margin-bottom: 30px" class="orange">Confirm delete </h1>
+                <div class="row">
+                    <div style="display: flex; justify-content: center; align-items: center;flex-direction: column">
+                          {% include 'clarion/include/page_card.html' %}
+                        <a href="{% url 'clarion:page_delete_confirm' page.pk %}" style="width: 120px;margin: 10px" class="btn btn-lg red">Delete</a>
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </section>
+{% endblock %}
