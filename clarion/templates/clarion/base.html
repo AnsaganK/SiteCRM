@@ -303,6 +303,8 @@
                             <a href="{{ page.get_absolute_url }}">{{ page.name }}</a>
                         </h3>
                         {{ page.get_rating|show_rating }}
+                        <br>
+                        {{ page.content|striptags|truncatechars:30 }}
                     </div>
                 </div>
                 {% endfor %}

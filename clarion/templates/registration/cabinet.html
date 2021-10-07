@@ -6,12 +6,14 @@
 
 
 {% block content %}
+    {% if user.is_superuser %}
     <a href="{% url 'clarion:parse_category' %}" class="btn-lg pink" style="
     margin: 20px auto;
     text-align: center;
     display: block;
     width: fit-content;
 ">Спарсить категории</a>
+    {% endif %}
     <form action="" class="custom_form" method="post">
             {% csrf_token %}
           <div class="mb-3">

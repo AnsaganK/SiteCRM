@@ -6,7 +6,7 @@ from django.db.models import Count, Sum
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 
-from .forms import ReviewForm, UserCreateForm, PageForm, UserForm
+from .forms import ReviewForm, UserCreateForm, PageForm, UserForm, CategoryForm
 from .models import Category, Page
 from .tasks import parser_clarion
 
@@ -78,14 +78,20 @@ def category_pages(request, pk):
                                                           })
     return redirect('clarion:index')
 
-def category_detail(request, pk):
-    category = Category.objects.filter(pk=pk).first()
-    if category and category.base_page:
-        page = category.base_page
-        print(page)
-        return redirect(reverse('clarion:page_detail', args=[page.id]))
-    return redirect('clarion:index')
 
+def subcategory_create(request, pk):
+    parent_category = Category.objects.filter(pk=pk).first()
+    if not parent_category:
+        return redirect('clarion:index')
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.parent_category = parent_category
+            messages.success(request, 'category created')
+        else:
+            show_form_errors(request, form.errors)
+        return redirect(reverse('clarion:category_pages', args=[category.pk]))
 
 def page_create(request, pk):
     category = Category.objects.filter(pk=pk).first()
