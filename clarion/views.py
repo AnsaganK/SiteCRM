@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, reverse
 
 from .forms import ReviewForm, UserCreateForm, PageForm, UserForm, CategoryForm
 from .models import Category, Page
-from .tasks import parser_clarion
+from .tasks import parser_category, parser_pages
 
 
 def show_form_errors(request, errors):
@@ -35,10 +35,18 @@ def show_categories(categories):
             categories_list.append({'category': category.name, 'children': tree})
     return categories_list
 
+
+def parse_pages(request):
+    Page.objects.filter(isCategory=None).filter(is_created=False).delete()
+    parser_pages.delay()
+    messages.success(request, 'Парсинг начат')
+    return redirect('clarion:index')
+
+
 def parse_category(request):
     Category.objects.all().delete()
     Page.objects.all().delete()
-    parser_clarion.delay()
+    parser_category.delay()
     messages.success(request, 'Парсинг начат')
     return redirect('clarion:index')
 
@@ -63,7 +71,7 @@ def category_pages(request, pk):
     category = Category.objects.filter(pk=pk).first()
     if category:
         pages = category.pages.all()
-        paginator = Paginator(pages, 16)
+        paginator = Paginator(pages, 10)
         page = request.GET.get('page')
         try:
             pages = paginator.page(page)

@@ -36,15 +36,18 @@ def show_rating(rating):
 
 @register.filter(name='category_breadcrumbs')
 def category_breadcrumbs(category):
-    breadcrumbs = ''
-    parent = category.parent_category
-    if parent:
-        print(parent)
-        breadcrumbs += category_breadcrumbs(parent) + f'<li><a href="{category.get_absolute_url()}">{category.name}</a></li>'
+    if category:
+        breadcrumbs = ''
+        parent = category.parent_category
+        if parent:
+            print(parent)
+            breadcrumbs += category_breadcrumbs(parent) + f'<li><a href="{category.get_absolute_url()}">{category.name}</a></li>'
 
+        else:
+            return f'<li><a href="{category.get_absolute_url()}">{category.name}</a></li>'
+        return breadcrumbs
     else:
-        return f'<li><a href="{category.get_absolute_url()}">{category.name}</a></li>'
-    return breadcrumbs
+        return ''
 
 @register.filter(name='isWriteReview')
 def isWriteReview(user, page):

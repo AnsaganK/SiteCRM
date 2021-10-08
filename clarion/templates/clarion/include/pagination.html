@@ -8,8 +8,8 @@
                             <li><a href="#">{{ page.number }}</a></li>
 
                             {% if page.has_next %}
-                                <li><a href="?page={{ page.next_page_number }}" type="button" class="btn btn-outline-secondary"><<</a></li>
-                                <li><a href="?page={{ page.paginator.num_pages }}" type="button" class="btn btn-outline-secondary">{{ page.next_page_number }}</a></li>
+                                <li><a href="?page={{ page.next_page_number }}" type="button" class="btn btn-outline-secondary">{{ page.next_page_number }}</a></li>
+                                <li><a href="?page={{ page.paginator.num_pages }}" type="button" class="btn btn-outline-secondary">>></a></li>
                             {% endif %}
                         </ul>
                     </nav>

@@ -18,5 +18,6 @@ urlpatterns = [
     path('registration', views.registration, name='registration'),
     path('cabinet', views.cabinet, name='cabinet'),
 
-    path('parse_category', views.parse_category, name='parse_category')
+    path('parse/pages', views.parse_pages, name='parse_pages'),
+    path('parse/category', views.parse_category, name='parse_category')
 ]
