@@ -17,7 +17,7 @@
             <div class="col-md-7">
                 <div class="feature_article_wrapper">
                     <div class="feature_article_img">
-                        <img class="img-responsive top_static_article_img" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top">
+                        <img class="img-responsive top_static_article_img" width="100%" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top">
                     </div>
                     <!-- feature_article_img -->
 
@@ -53,10 +53,10 @@
             <!-- col-md-7 -->
 
         {% for page in last_pages|slice:'1:' %}
-            <div class="col-md-5">
+            <div class="col-md-5" style="min-height: 320px">
                 <div class="{% if forloop.last %}feature_static_last_wrapper{% else %}feature_static_wrapper{% endif %}">
                     <div class="feature_article_img">
-                        <img class="img-responsive" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top">
+                        <img class="img-responsive" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" width="100%" alt="feature-top">
                     </div>
                     <!-- feature_article_img -->
 
@@ -102,15 +102,3 @@
 </section>
 
 {% endblock %}
-
-    {% for category in categories %}
-        <p><a href="http://127.0.0.1:8000{{ category.get_absolute_url }}">{{ category }}</a></p>
-        {% for category in category.children.all %}
-            <p><a href="http://127.0.0.1:8000{{ category.get_absolute_url }}">-----{{ category }}</a></p>
-            {% for category in category.children.all %}
-                <p><a href="http://127.0.0.1:8000{{ category.get_absolute_url }}">----------{{ category }}</a></p>
-
-            {% endfor %}
-        {% endfor %}
-        <hr>
-    {% endfor %}

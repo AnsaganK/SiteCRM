@@ -27,7 +27,7 @@
             </div>
         </div>
         {% endfor %}
-        <p class="widget_divider"><a href="#" target="_self">More News&nbsp;»</a></p>
+        <p class="widget_divider"><a href="{% url 'clarion:popular_pages' %}" target="_self">More News&nbsp;»</a></p>
     </div>
     <!-- Popular News -->
 
@@ -53,7 +53,7 @@
                 </div>
             </div>
         {% endfor %}
-        <p class="widget_divider"><a href="#" target="_self">More News&nbsp;&nbsp;» </a></p>
+        <p class="widget_divider"><a href="{% url 'clarion:commented_pages' %}"  target="_self">More News&nbsp;&nbsp;» </a></p>
     </div>
     <!-- Most Commented News -->
 </div>

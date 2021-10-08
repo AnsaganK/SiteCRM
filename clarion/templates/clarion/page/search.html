@@ -1,0 +1,21 @@
+{% extends 'clarion/base.html' %}
+
+{% block title %}
+    Search Result
+{% endblock %}
+
+{% block content %}
+        <section id="entity_section" class="entity_section">
+            <div class="container">
+                <h3>Search Result ({{ query }}): {{ search_count }} news</h3>
+                <form action="{% url 'clarion:search' %}" method="get" style="display:flex; justify-content: center">
+                    <input type="text" class="form-control" value="{{ query }}" name="search" style="width: 400px;">
+                    <button type="submit" class="btn btn-sm pink" style="margin-left: -50px;">search</button>
+                </form>
+                {% for page in pages %}
+                    {% include 'clarion/include/page_card_little.html' %}
+                {% endfor %}
+            </div>
+        </section>
+        {% include 'clarion/include/pagination.html' with page=pages %}
+{% endblock %}

@@ -62,7 +62,7 @@
     }
     .rating-area:not(:checked) > label:hover,
     .rating-area:not(:checked) > label:hover ~ label {
-        color: gold;
+        color: #fff1a8;
     }
     .rating-area > input:checked + label:hover,
     .rating-area > input:checked + label:hover ~ label,
@@ -106,6 +106,19 @@
         .control_page{
             position: absolute;
             right: 15px;
+            top: -55px;
+        }
+        .little_card{
+            box-sizing: border-box;
+            margin: 10px auto;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            min-height: 380px;
+            transition: box-shadow .2s;
+        }
+        .little_card:hover{
+            z-index: 10;
+            box-shadow: 0px 1px 5px #000;
         }
     </style>
 
@@ -120,7 +133,7 @@
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar">
-{% if messages %}
+{% if messages %}2
             <div class="messages">
                 {% for message in messages %}
                     <span class="msg msg-{{ message.tags }}">{{ message|safe }}</span>
@@ -204,11 +217,11 @@
                                 <ul class="dropdown-menu">
                                     <li>
                                         <div class="head-search">
-                                            <form role="form">
+                                            <form action="{% url 'clarion:search' %}" role="form" method="get">
                                                 <!-- Input Group -->
                                                 <div class="input-group">
                                                     <input type="text" class="form-control"
-                                                           placeholder="Type Something"> <span class="input-group-btn">
+                                                           placeholder="Type Something" name="search"> <span class="input-group-btn">
                                                                             <button type="submit"
                                                                                     class="btn btn-primary">Search
                                                                             </button>

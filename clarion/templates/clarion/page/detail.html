@@ -29,7 +29,7 @@
                     {% if request.user.is_superuser %}
                         <div class="control_page">
                             {% if page.url %}
-                                <a href="{% url 'clarion:page_edit' page.pk %}" class="btn btn-lg green">update</a>
+                                <a href="{% url 'clarion:page_update' page.pk %}" class="btn btn-lg green">update</a>
                             {% endif %}
                             <a href="{% url 'clarion:page_edit' page.pk %}" class="btn btn-lg orange">edit</a>
                             <a href="{% url 'clarion:page_delete' page.pk %}" class="btn btn-lg red">delete</a>
@@ -44,8 +44,10 @@
                         </div>
                         <!-- entity_title -->
 
-                        <div class="entity_meta"><a href="#" target="_self">{{ page.date_create }}</a><a href="#"
-                                                                                                         target="_self"></a>
+                        <div class="entity_meta">
+                            <a href="#" target="_self">created: {{ page.date_create }}</a>
+                            <br>
+                            <a href="#" target="_self">{% if page.date_update %}updated: {{ page.date_update }}{% endif %}</a>
                         </div>
                         <!-- entity_meta -->
                         {{ page.get_rating|show_rating }}
@@ -71,15 +73,15 @@
 
                         <div class="entity_thumb">
                             {% if page.img %}
-                                <img class="img-responsive" src="{{ page.img.url }}" alt="feature-top">
+                                <img class="img-responsive" src="{{ page.img.url }}" alt="feature-top" width="100%">
                             {% else %}
-                                <img class="img-responsive" src="{% static 'img/no_img.png' %}" alt="feature-top">
+                                <img class="img-responsive" src="{% static 'img/no_img.png' %}" alt="feature-top" width="100%">
                             {% endif %}
                         </div>
                         <!-- entity_thumb -->
                         <div class="entity_content">
                             <h3><a href="">{{ page.name }}</a></h3>
-                            {{ page.content|safe }}
+                            <div >{{ page.content|replaceIMG|safe }}</div>
                         </div>
                         {% if page.url %}<p class="gray">Source: {{ page.url }}</p>{% endif %}
                         <!-- entity_content -->
@@ -87,9 +89,9 @@
                         <div class="entity_footer">
                             <div class="entity_tag">
                                 {% if page.category %}
-                                    <span class="blank"><a href="#">{{ page.category.name }}</a></span>
+                                    <span class="blank"><a href="{{ page.category.get_absolute_url }}">{{ page.category.name }}</a></span>
                                 {% else %}
-                                    <span class="blank"><a href="#">{{ page.isCategory.first.name }}</a></span>
+                                    <span class="blank"><a href="{{ page.isCategory.first.get_absolute_url }}">{{ page.isCategory.first.name }}</a></span>
                                 {% endif %}
                             </div>
                             <!-- entity_tag -->

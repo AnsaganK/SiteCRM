@@ -2,13 +2,13 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 
 from .forms import ReviewForm, UserCreateForm, PageForm, UserForm, CategoryForm
 from .models import Category, Page
-from .tasks import parser_category, parser_pages
+from .tasks import parser_category, parser_pages, update_page
 
 
 def show_form_errors(request, errors):
@@ -59,13 +59,17 @@ def index(request):
     return render(request, 'clarion/index.html', {'last_pages': last_pages})
 
 
-def get_popular_pages():
-    return Page.objects.annotate(review_sum=Sum('reviews__stars')/Count('reviews')).order_by('review_sum')[:4]
+def get_popular_pages(limit=None):
+    pages = Page.objects.annotate(review_sum=Sum('reviews__stars')/Count('reviews')).order_by('review_sum')
+    if limit:
+        return pages[:limit]
+    return pages
 
-
-def get_commented_pages():
-    return Page.objects.all().annotate(comment_count=Count('reviews')).order_by('-comment_count')[:4]
-
+def get_commented_pages(limit=None):
+    pages = Page.objects.all().annotate(comment_count=Count('reviews')).order_by('-comment_count')
+    if limit:
+        return pages[:limit]
+    return pages
 
 def get_related_pages():
     return Page.objects.all()[:4]
@@ -84,11 +88,25 @@ def category_pages(request, pk):
         except EmptyPage:
             pages = paginator.page(paginator.num_pages)
         return render(request, 'clarion/page/list.html', {'category': category, 'pages': pages,
-                                                          'popular_pages': get_popular_pages(),
-                                                          'commented_pages': get_commented_pages(),
+                                                          'popular_pages': get_popular_pages(limit=4),
+                                                          'commented_pages': get_commented_pages(limit=4),
                                                           'related_pages': get_related_pages(),
                                                           })
     return redirect('clarion:index')
+
+def category_edit(request, pk):
+    category = Category.objects.filter(pk=pk).first()
+    if not category:
+        return redirect('clarion:index')
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            messages.success(request, 'Категория изменена')
+            form.save()
+        else:
+            show_form_errors(request, form.errors)
+        return redirect(reverse('clarion:category_pages', args=[category.pk]))
+    return render(request, 'clarion/category/edit.html', {'category': category})
 
 
 def subcategory_create(request, pk):
@@ -100,10 +118,13 @@ def subcategory_create(request, pk):
         if form.is_valid():
             category = form.save(commit=False)
             category.parent_category = parent_category
+            category.save()
             messages.success(request, 'category created')
         else:
             show_form_errors(request, form.errors)
-        return redirect(reverse('clarion:category_pages', args=[category.pk]))
+        return redirect(reverse('clarion:category_pages', args=[parent_category.pk]))
+    return render(request, 'clarion/category/subcategory/create.html')
+
 
 def page_create(request, pk):
     category = Category.objects.filter(pk=pk).first()
@@ -152,7 +173,13 @@ def page_edit(request, pk):
         return render(request, 'clarion/page/edit.html', {'page': page})
     return redirect('clarion:index')
 
-
+def page_update(request, pk):
+    page = Page.objects.filter(pk=pk).first()
+    if not page or not page.url:
+        return redirect('clarion:index')
+    update_page.delay(pk=pk, url=page.url)
+    messages.success(request, 'Данные скоро изменятся, обновите страницу')
+    return redirect(reverse('clarion:page_detail', args=[page.pk]))
 
 def page_detail(request, pk):
     page = Page.objects.filter(pk=pk).first()
@@ -172,9 +199,54 @@ def page_detail(request, pk):
             show_form_errors(request, form.errors)
         return redirect(page.get_absolute_url())
     return render(request, 'clarion/page/detail.html', {'page': page,
-                                                        'popular_pages': get_popular_pages(),
-                                                        'commented_pages': get_commented_pages(),
+                                                        'popular_pages': get_popular_pages(limit=4),
+                                                        'commented_pages': get_commented_pages(limit=4),
                                                         'related_pages': get_related_pages(),})
+
+def popular_pages(request):
+    title = 'Top popular pages'
+    pages = get_popular_pages()
+    paginator = Paginator(pages, 12)
+    page = request.GET.get('page')
+    try:
+        pages = paginator.page(page)
+    except PageNotAnInteger:
+        pages = paginator.page(1)
+    except EmptyPage:
+        pages = paginator.page(paginator.num_pages)
+    return render(request, 'clarion/page/top_list.html', {'title': title, 'pages': pages})
+
+
+def commented_pages(request):
+    title = 'Top commented pages'
+    pages = get_commented_pages()
+    paginator = Paginator(pages, 12)
+    page = request.GET.get('page')
+    try:
+        pages = paginator.page(page)
+    except PageNotAnInteger:
+        pages = paginator.page(1)
+    except EmptyPage:
+        pages = paginator.page(paginator.num_pages)
+    return render(request, 'clarion/page/top_list.html', {'title': title,'pages': pages})
+
+def search(request):
+    query = ''
+    if request.method == 'GET':
+        query = request.GET.get('search')
+    pages = Page.objects.filter(
+        Q(name__icontains=query) | Q(content__icontains=query)
+    )
+    search_count = pages.count()
+    paginator = Paginator(pages, 12)
+    page = request.GET.get('page')
+    try:
+        pages = paginator.page(page)
+    except PageNotAnInteger:
+        pages = paginator.page(1)
+    except EmptyPage:
+        pages = paginator.page(paginator.num_pages)
+    return render(request, 'clarion/page/search.html', {'pages': pages, 'query': query, 'search_count': search_count})
 
 
 def registration(request):

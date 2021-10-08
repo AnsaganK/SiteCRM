@@ -1,0 +1,17 @@
+{% extends 'clarion/base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <section id="entity_section" class="entity_section">
+            <h2 style="text-align: center; color:#6a6a6a;">{{ title }}</h2>
+            <div class="container">
+                {% for page in pages %}
+                    {% include 'clarion/include/page_card_little.html' %}
+                {% endfor %}
+            </div>
+        </section>
+        {% include 'clarion/include/pagination.html' with page=pages %}
+{% endblock %}

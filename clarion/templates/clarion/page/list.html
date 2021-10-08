@@ -23,9 +23,9 @@
                 <div class="col-md-8">
                     {% if request.user.is_superuser %}
                         <div class="control_page">
-                        <a href="" class="btn btn-lg green">+ subcategory</a>
+                        <a href="{% url 'clarion:subcategory_create' category.pk %}" class="btn btn-lg green">+ subcategory</a>
                         <a href="{% url 'clarion:page_create' category.pk %}" class="btn btn-lg green">+ news</a>
-                        <a href="" class="btn btn-lg orange">edit</a>
+                        <a href="{% url 'clarion:category_edit' category.pk %}" class="btn btn-lg orange">edit</a>
                     </div>
                     {% endif %}
                     {% if category.children.all %}

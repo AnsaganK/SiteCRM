@@ -1,6 +1,8 @@
 from django import template
 from django.template.defaultfilters import safe
 
+from clarion.tasks import base_url
+
 register = template.Library()
 
 def category_tree(category, zero=1):
@@ -54,3 +56,10 @@ def isWriteReview(user, page):
     if user.reviews.filter(page=page).first():
         return True
     return False
+
+
+@register.filter(name="replaceIMG")
+def replaceIMG(content):
+    if content:
+        content = content.replace('src="/', f'src="{base_url}/')
+    return content

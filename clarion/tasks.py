@@ -26,6 +26,17 @@ def get_category(name):
     category = Category.objects.filter(name=name).first()
     return category if category else None
 
+@shared_task
+def update_page(pk, url):
+    page = Page.objects.filter(pk=pk).first()
+    if not page:
+        return None
+    site = get_soup(get_site(url))
+    content = site.find_all('div', class_='art-post-inner')[-1]
+    page.content = str(content)
+    page.save()
+    return f' Страница {page.name} обновлена'
+
 
 def detail_page(name, url):
     site = get_soup(get_site(url))
