@@ -58,14 +58,18 @@ def index(request):
     # categories = show_categories(Category.objects.filter(parent_category=None))
     return render(request, 'clarion/index.html', {'last_pages': last_pages})
 
+
 def get_popular_pages():
-    return Page.objects.all().annotate(review_sum=Sum('reviews__stars')/Count('reviews')).order_by('-review_sum')[:4]
+    return Page.objects.annotate(review_sum=Sum('reviews__stars')/Count('reviews')).order_by('review_sum')[:4]
+
 
 def get_commented_pages():
     return Page.objects.all().annotate(comment_count=Count('reviews')).order_by('-comment_count')[:4]
 
+
 def get_related_pages():
     return Page.objects.all()[:4]
+
 
 def category_pages(request, pk):
     category = Category.objects.filter(pk=pk).first()

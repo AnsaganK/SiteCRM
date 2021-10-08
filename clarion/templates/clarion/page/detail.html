@@ -250,13 +250,18 @@
                                         {% csrf_token %}
                                         <div class="form-group comment">
                                             <label for="">Stars</label>
-                                            <select name="stars" class="form-control select" id="" style="width: 55px">
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5" selected>5</option>
-                                            </select>
+                                            <div class="rating-area">
+                                                <input type="radio" id="star-5" name="stars" value="5">
+                                                <label for="star-5" title="Оценка «5»"></label>
+                                                <input type="radio" id="star-4" name="stars" value="4">
+                                                <label for="star-4" title="Оценка «4»"></label>
+                                                <input type="radio" id="star-3" name="stars" value="3">
+                                                <label for="star-3" title="Оценка «3»"></label>
+                                                <input type="radio" id="star-2" name="stars" value="2">
+                                                <label for="star-2" title="Оценка «2»"></label>
+                                                <input type="radio" id="star-1" checked name="stars" value="1">
+                                                <label for="star-1" title="Оценка «1»"></label>
+                                            </div>
                                             <label for="">Comment</label>
                                             <textarea class="form-control" id="inputComment" name="text"
                                                       placeholder="Comment"></textarea><br>
