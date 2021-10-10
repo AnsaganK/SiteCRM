@@ -12,13 +12,22 @@
             <div class="row">
                 <form action="" class="col-md-12" method="post">
                     {% csrf_token %}
-                    <label for="">Name</label>
-                    <input type="text" required class="form-control" value="{{ category.name }}" name="name">
+                    <div class="col-md-12" style="text-align: center; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                        <label for="">Name</label>
+                        <input type="text" required class="form-control" value="{{ category.name }}" name="name">
+                        {% if category.base_page %}
+                                <h3>Главная страница</h3>
+                                {% include 'clarion/include/page_card.html' with page=category.base_page %}
+                        {% else %}
+                                <h3>Главная страница не создана</h3>
+                                <a href="{% url 'clarion:page_create' category.pk %}" class="btn btn-lg green">Добавить главную страницу</a>
+                        {% endif %}
+                    </div>
                     <br>
-
                     <hr>
                     <button type="submit" class="btn btn-lg pink">edit page</button>
                 </form>
+
             </div>
         </div>
     </section>

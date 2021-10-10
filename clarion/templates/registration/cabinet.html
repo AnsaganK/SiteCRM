@@ -19,6 +19,12 @@
     display: block;
     width: fit-content;
 ">Спарсить страницы</a>
+    <a href="{% url 'clarion:check_page_links' %}" class="btn-lg pink" style="
+    margin: 20px auto;
+    text-align: center;
+    display: block;
+    width: fit-content;
+">Поправить ссылки</a>
     {% endif %}
     <form action="" class="custom_form" method="post">
             {% csrf_token %}

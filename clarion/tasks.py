@@ -1,8 +1,15 @@
+from io import BytesIO
+
 from celery import shared_task
 
 import requests
 from bs4 import BeautifulSoup as BS
+from django.core import files
+from django.core.files.base import ContentFile
+
 from clarion.models import Category, Page
+
+
 
 base_url = 'https://clarionherald.info'
 url2 = 'https://clarionherald.info/clarion/index.php/news'
@@ -20,6 +27,51 @@ def get_site(url=base_url):
 def get_soup(response_text):
     html = BS(response_text, 'lxml')
     return html
+
+# Перевод ссылок на данный сайт
+def create_or_get_page(name, url):
+    if Page.objects.filter(url=url).first():
+        #print('Такая страница есть в базе')
+        return Page.objects.filter(url=url).first()
+    #print('Такой страницы нет в базе, жалко')
+    page = detail_page(name, url)
+    check_page(page.pk)
+    return detail_page(name, url)
+
+
+def check_links(html):
+    links = html.find_all('a')
+    locale_links_count = 0
+    #print(f'В этой странице найдено {len(links)} ссылок')
+    for link_index in range(len(links)):
+        if '/page/' not in links[link_index]['href'] or ('/clarion' in links[link_index]['href'] or '.php' in links[link_index]['href']):
+            locale_links_count += 1
+            link = links[link_index]
+            name = link['href'].split('/')[-1]
+            page = create_or_get_page(name, base_url+link['href'])
+            link['href'] = page.get_absolute_url()
+            links[link_index].replace_with = link
+    #print(f'Из них локальных {locale_links_count}')
+    #print()
+    return str(links)
+
+
+def check_page(page_pk):
+    page = Page.objects.filter(pk=page_pk).first()
+    content = get_soup(page.content)
+    page.content = check_links(content)
+    page.save()
+
+
+@shared_task
+def check_pages():
+    pages = Page.objects.exclude(url=None)
+    print(f'Всего страниц {pages.count()}')
+    for page in pages:
+        print(f'Сейчас проверяю страницу {page.pk}: {page.name}')
+        check_page(page.pk)
+    return 'Исправление ссылок сделано'
+
 
 # Парсер страниц с главной страницы
 def get_category(name):
@@ -42,19 +94,38 @@ def detail_page(name, url):
     site = get_soup(get_site(url))
     if not site:
         return site
+    try:
+        content = site.find_all('div', class_='art-post-inner')[-1]
+    except:
+        content = ''
+        return create_page(name=name, html_dict={
+            'html': str(site),
+            'content': str(content)
+        }, url=url)
 
-    content = site.find_all('div', class_='art-post-inner')[-1]
+    html_dict = {
+            'html': str(site),
+            'content': str(content)
+        }
+
+
+
     try:
         category_name = site.find('span', class_='art-post-metadata-category-parent').text
         category = get_category(name=category_name)
     except:
         category = None
+    try:
+        picture_element = content.find('div', class_='art-article')
+        if picture_element.find('img'):
+            img_url = picture_element.find('img')['src']
+        else:
+            img_url = picture_element.find('input')['src']
+        img_url = base_url + img_url
+    except:
+        img_url = None
 
-    html_dict = {
-        'html': str(site),
-        'content': str(content)
-    }
-    create_page(name=name, html_dict=html_dict, url=url, category=category)
+    return create_page(name=name, html_dict=html_dict, url=url, category=category, img_url=img_url)
 
 
 
@@ -70,7 +141,6 @@ def get_pages_link(cards):
             link = i.find('a', class_='readon art-button')['href']
         except:
             link = None
-        print(title, link)
         page_object = {
             'title': title,
             'link': link
@@ -83,13 +153,13 @@ def get_pages_link(cards):
             PAGES.append(page_object)
     return next_link
 
+
 def parser_page_recursion(url):
     print()
     html = get_soup(get_site(url))
     cards = html.find('div', class_='blog-featured').findChildren(recursive=False)
     next_link = get_pages_link(cards)
     if next_link and EQUAL_COUNT < 100:
-        print(base_url + next_link)
         parser_pages(base_url + next_link)
     else:
         print('Парсинг завершен')
@@ -104,10 +174,21 @@ def parser_pages(url=base_url):
     EQUAL_COUNT = 0
     return result
 
-
+@shared_task
+def save_image_url(page_id, img_url):
+    page = Page.objects.filter(pk=page_id).first()
+    r = requests.get(img_url)
+    if r.status_code == 200 and page:
+        fp = BytesIO()
+        fp.write(r.content)
+        file_name = img_url.split('/')[-1]
+        file = files.File(fp)
+        if file.size > 1000:
+            page.img.save(file_name, files.File(fp))
+            return f'id: {page_id} url: {img_url} (Картинка сохранена)'
 
 # Парсер категории меню
-def create_page(name, html_dict=None, url=None, category=None):
+def create_page(name, html_dict=None, url=None, category=None, img_url=None):
     page = Page.objects.create(name=name)
     page.save()
     if url:
@@ -118,6 +199,8 @@ def create_page(name, html_dict=None, url=None, category=None):
     if category:
         page.category = category
         #page.is_created = True
+    if img_url:
+        save_image_url.delay(page_id=page.pk, img_url=img_url)
     page.save()
     return page
 
@@ -173,4 +256,4 @@ def parser_category():
 
 
 if __name__ == '__main__':
-    parser_category()
+    check_pages()

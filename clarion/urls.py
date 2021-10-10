@@ -7,6 +7,7 @@ urlpatterns = [
     path('category/<int:pk>/edit', views.category_edit, name='category_edit'),
     path('category/<int:pk>/news', views.category_pages, name='category_pages'),
     path('category/<int:pk>/subcategory/create', views.subcategory_create, name='subcategory_create'),
+    path('category/<int:pk>/page/base/create', views.base_page_create, name='base_page_create'),
     path('category/<int:pk>/page/create', views.page_create, name='page_create'),
     # path('category/<int:pk>', views.category_detail, name='category_detail'),
 
@@ -24,6 +25,8 @@ urlpatterns = [
     path('cabinet', views.cabinet, name='cabinet'),
 
     path('parse/pages', views.parse_pages, name='parse_pages'),
-    path('parse/category', views.parse_category, name='parse_category')
+    path('parse/category', views.parse_category, name='parse_category'),
+
+    path('check_page_links', views.check_page_links, name='check_page_links')
 ]
 

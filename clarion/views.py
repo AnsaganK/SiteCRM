@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, reverse
 
 from .forms import ReviewForm, UserCreateForm, PageForm, UserForm, CategoryForm
 from .models import Category, Page
-from .tasks import parser_category, parser_pages, update_page
+from .tasks import parser_category, parser_pages, update_page, check_pages
 
 
 def show_form_errors(request, errors):
@@ -126,6 +126,14 @@ def subcategory_create(request, pk):
     return render(request, 'clarion/category/subcategory/create.html')
 
 
+def save_page_form(post, files):
+    pass
+
+
+def base_page_create(request, pk):
+    pass
+
+
 def page_create(request, pk):
     category = Category.objects.filter(pk=pk).first()
     if not category:
@@ -142,8 +150,8 @@ def page_create(request, pk):
             return redirect(reverse('clarion:category_pages', args=[category.pk]))
         else:
             show_form_errors(form.errors)
-
     return render(request, 'clarion/page/create.html')
+
 
 @login_required()
 def page_delete_confirm(request, pk):
@@ -271,3 +279,8 @@ def cabinet(request):
         else:
             show_form_errors(request, form.errors)
     return render(request, 'registration/cabinet.html', {'user': user})
+
+
+def check_page_links(request):
+    check_pages.delay()
+    return redirect('clarion:index')

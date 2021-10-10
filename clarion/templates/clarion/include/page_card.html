@@ -3,7 +3,7 @@
 <div class="col-md-6">
     <div class="category_article_body">
         <div class="top_article_img">
-            <a href="{{ page.get_absolute_url }}"><img class="img-responsive" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top"></a>
+            <a href="{{ page.get_absolute_url }}"><img class="img-responsive" src="{% if page.img %}{{ page.img.url }}{% else %}{% static 'img/no_img.png' %}{% endif %}" alt="feature-top" style="width: 100% !important; height: 300px !important;"></a>
         </div>
         <!-- top_article_img -->
 
@@ -30,5 +30,4 @@
 
     </div>
     <!-- category_article_body -->
-
 </div>
