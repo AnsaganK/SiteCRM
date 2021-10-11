@@ -83,7 +83,7 @@
                             <h3><a href="">{{ page.name }}</a></h3>
                             <div >{{ page.content|replaceIMG|safe }}</div>
                         </div>
-                        {% if page.url %}<p class="gray">Source: {{ page.url }}</p>{% endif %}
+                        {% if page.url %}<p class="gray"><a href="{{ page.get_absolute_url }}">Source: {{ page.url }}</a></p>{% endif %}
                         <!-- entity_content -->
 
                         <div class="entity_footer">
@@ -134,7 +134,7 @@
 
                                             <h3 class="media-heading"><a href="{{ page.get_absolute_url }}"
                                                                          target="_self">{{ page.name }}</a></h3>
-                                            <span class="media-date"><a href="#">10Aug- 2015</a>,  by: <a href="#">Eric joan</a></span>
+                                            <span class="media-date"><a href="#">{{ page.date_create }}</a></span>
 
                                             <div class="media_social">
                                                 <span><a href="#"><i
