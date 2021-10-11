@@ -27,8 +27,8 @@ class Category(models.Model):
 class Page(models.Model):
     img = models.ImageField(upload_to='pages', null=True, blank=True, verbose_name='Картинка')
 
-    name = models.CharField(max_length=200, verbose_name='Название')
-    url = models.URLField(max_length=500, null=True, blank=True, verbose_name='Ссылка')
+    name = models.CharField(max_length=400, verbose_name='Название')
+    url = models.URLField(max_length=1000, null=True, blank=True, verbose_name='Ссылка')
 
     content = models.TextField(null=True, blank=True, verbose_name='Контент')
     html = models.TextField(null=True, blank=True, verbose_name='HTML страницы')
