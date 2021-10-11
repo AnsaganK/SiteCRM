@@ -8,10 +8,8 @@ from django.core import files
 from django.core.files.base import ContentFile
 
 from clarion.models import Category, Page
+from constants import base_url
 
-
-
-base_url = 'https://clarionherald.info'
 url2 = 'https://clarionherald.info/clarion/index.php/news'
 
 PAGES = []
@@ -31,35 +29,28 @@ def get_soup(response_text):
 # Перевод ссылок на данный сайт
 def create_or_get_page(name, url):
     if Page.objects.filter(url=url).first():
-        #print('Такая страница есть в базе')
         return Page.objects.filter(url=url).first()
-    #print('Такой страницы нет в базе, жалко')
     page = detail_page(name, url)
-    check_page(page.pk)
+    if page:
+        check_page(page.url)
     return page
 
 
 def check_links(html):
     links = html.find_all('a')
     locale_links_count = 0
-    #print(f'В этой странице найдено {len(links)} ссылок')
     for link_index in range(len(links)):
         link = links[link_index]
-        if ('/' == link['href'][0]) and ('/page' != link['href'][:5] or ('/clarion' in link['href'] or '.php' in link['href'])):
+        if '/' == link['href'][0]:
             locale_links_count += 1
             name = link['href'].split('/')[-1]
-            page = create_or_get_page(name, base_url+link['href'])
-            link['href'] = page.get_absolute_url()
-            links[link_index].replace_with = link
-    #print(f'Из них локальных {locale_links_count}')
-    #print()
-    return str(links)
+            create_or_get_page(name, base_url+link['href'])
 
 
-def check_page(page_pk):
-    page = Page.objects.filter(pk=page_pk).first()
+def check_page(page_url):
+    page = Page.objects.filter(url=page_url).first()
     content = get_soup(page.content)
-    page.content = check_links(content)
+    check_links(content)
     page.save()
 
 
@@ -69,7 +60,7 @@ def check_pages():
     print(f'Всего страниц {pages.count()}')
     for page in pages:
         print(f'Сейчас проверяю страницу {page.pk}: {page.name}')
-        check_page(page.pk)
+        check_page(page.url)
     return 'Исправление ссылок сделано'
 
 
@@ -83,35 +74,35 @@ def update_page(pk, url):
     page = Page.objects.filter(pk=pk).first()
     if not page:
         return None
-    site = get_soup(get_site(url))
-    content = site.find_all('div', class_='art-post-inner')[-1]
+    soup = get_soup(get_site(url))
+    content = soup.find_all('div', class_='art-post-inner')[-1]
     page.content = str(content)
     page.save()
     return f' Страница {page.name} обновлена'
 
 
 def detail_page(name, url):
-    site = get_soup(get_site(url))
-    if not site:
-        return site
+    soup = get_soup(get_site(url))
+    if not soup:
+        return soup
+    meta_data = soup.find('head').find_all('meta')
     try:
-        content = site.find_all('div', class_='art-post-inner')[-1]
+        content = soup.find_all('div', class_='art-post-inner')[-1]
     except:
         content = ''
         return create_page(name=name, html_dict={
-            'html': str(site),
-            'content': str(content)
+            'html': str(soup),
+            'content': str(content),
+            'meta_data': str(meta_data)
         }, url=url)
 
     html_dict = {
-            'html': str(site),
-            'content': str(content)
+            'html': str(soup),
+            'content': str(content),
+            'meta_data': str(meta_data),
         }
-
-
-
     try:
-        category_name = site.find('span', class_='art-post-metadata-category-parent').text
+        category_name = soup.find('span', class_='art-post-metadata-category-parent').text
         category = get_category(name=category_name)
     except:
         category = None
@@ -156,8 +147,8 @@ def get_pages_link(cards):
 
 def parser_page_recursion(url):
     print()
-    html = get_soup(get_site(url))
-    cards = html.find('div', class_='blog-featured').findChildren(recursive=False)
+    soup = get_soup(get_site(url))
+    cards = soup.find('div', class_='blog-featured').findChildren(recursive=False)
     next_link = get_pages_link(cards)
     if next_link and EQUAL_COUNT < 100:
         parser_pages(base_url + next_link)
@@ -189,11 +180,14 @@ def save_image_url(page_id, img_url):
 
 # Парсер категории меню
 def create_page(name, html_dict=None, url=None, category=None, img_url=None):
+    if url and Page.objects.filter(url=url).first():
+        return None
     page = Page.objects.create(name=name)
     page.save()
     if url:
         page.url = url
     if html_dict:
+        page.meta_data = html_dict['meta_data']
         page.html = html_dict['html']
         page.content = html_dict['content']
     if category:
@@ -235,13 +229,15 @@ def get_categories(categories, parent_category=None):
 def get_page(page_url):
     site = get_site(page_url)
     soup = get_soup(site)
+    meta_data = soup.find('head').find_all('meta')
     try:
         content = soup.find('div', class_='art-post-body')
     except:
         content = ''
     return {
         'html': str(soup),
-        'content': str(content)
+        'content': str(content),
+        'meta_data': str(meta_data)
     }
 
 @shared_task

@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, reverse
 
 from .forms import ReviewForm, UserCreateForm, PageForm, UserForm, CategoryForm
 from .models import Category, Page
-from .tasks import parser_category, parser_pages, update_page, check_pages
+from .tasks import parser_category, parser_pages, update_page, check_pages, base_url
 
 
 def show_form_errors(request, errors):
@@ -176,7 +176,7 @@ def page_edit(request, pk):
             form.save()
         else:
             show_form_errors(request, form.errors)
-        return redirect(reverse('clarion:page_detail', args=[page.id]))
+        return redirect(page.get_absolute_url())
     if page:
         return render(request, 'clarion/page/edit.html', {'page': page})
     return redirect('clarion:index')
@@ -189,12 +189,14 @@ def page_update(request, pk):
     messages.success(request, 'Данные скоро изменятся, обновите страницу')
     return redirect(reverse('clarion:page_detail', args=[page.pk]))
 
-def page_detail(request, pk):
-    page = Page.objects.filter(pk=pk).first()
+def page_detail(request, url):
+    print(base_url+url)
+    page = Page.objects.filter(url=base_url+'/'+url).first()
+    print(page)
     if request.method == 'POST':
         if request.user.reviews.filter(user__reviews__in=page.reviews.all()):
             messages.success(request, 'Не более одного комментария')
-            return redirect(reverse('clarion:page_detail', args=[pk]))
+            return redirect(reverse('clarion:page_detail', args=[url]))
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)

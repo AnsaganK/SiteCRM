@@ -1,7 +1,7 @@
 from django import template
 from django.template.defaultfilters import safe
 
-from clarion.tasks import base_url
+from constants import base_url
 
 register = template.Library()
 

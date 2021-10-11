@@ -1,3 +1,5 @@
+base_url = 'https://clarionherald.info'
+
 DB_USER = 'postgres'
 DB_NAME = 'clarion'
 DB_PASSWORD = '12345'

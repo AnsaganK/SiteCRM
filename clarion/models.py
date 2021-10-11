@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
 
+from constants import base_url
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название')
@@ -30,6 +32,7 @@ class Page(models.Model):
     name = models.CharField(max_length=400, verbose_name='Название')
     url = models.URLField(max_length=1000, null=True, blank=True, verbose_name='Ссылка')
 
+    meta_data = models.TextField(null=True, blank=True, verbose_name='Мета данные')
     content = models.TextField(null=True, blank=True, verbose_name='Контент')
     html = models.TextField(null=True, blank=True, verbose_name='HTML страницы')
 
@@ -44,7 +47,7 @@ class Page(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('clarion:page_detail', args=[self.id])
+        return reverse('clarion:page_detail', args=[str(self.url).replace(f'{base_url}/', '')])
 
     def get_rating(self):
         if self.reviews.count():
