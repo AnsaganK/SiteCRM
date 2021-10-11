@@ -282,5 +282,7 @@ def cabinet(request):
 
 
 def check_page_links(request):
+    pages = Page.objects.exclude(category=None).delete()
+    messages.success(request, 'Исправление ссылок начинается')
     check_pages.delay()
     return redirect('clarion:index')

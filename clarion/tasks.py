@@ -44,9 +44,9 @@ def check_links(html):
     locale_links_count = 0
     #print(f'В этой странице найдено {len(links)} ссылок')
     for link_index in range(len(links)):
-        if '/page/' not in links[link_index]['href'] or ('/clarion' in links[link_index]['href'] or '.php' in links[link_index]['href']):
+        link = links[link_index]
+        if ('/' == link['href'][0]) and ('/page' != link['href'][:5] or ('/clarion' in link['href'] or '.php' in link['href'])):
             locale_links_count += 1
-            link = links[link_index]
             name = link['href'].split('/')[-1]
             page = create_or_get_page(name, base_url+link['href'])
             link['href'] = page.get_absolute_url()
