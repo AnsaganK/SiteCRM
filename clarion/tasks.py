@@ -36,7 +36,7 @@ def create_or_get_page(name, url):
     #print('Такой страницы нет в базе, жалко')
     page = detail_page(name, url)
     check_page(page.pk)
-    return detail_page(name, url)
+    return page
 
 
 def check_links(html):
