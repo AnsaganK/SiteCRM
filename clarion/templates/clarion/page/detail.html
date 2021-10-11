@@ -83,7 +83,7 @@
                             <h3><a href="">{{ page.name }}</a></h3>
                             <div >{{ page.content|replaceIMG|safe }}</div>
                         </div>
-                        {% if page.url %}<p class="gray"><a href="{{ page.get_absolute_url }}">Source: {{ page.url }}</a></p>{% endif %}
+                        {% if page.url %}<p class="gray"><a href="{{ page.url }}">Source: {{ page.url }}</a></p>{% endif %}
                         <!-- entity_content -->
 
                         <div class="entity_footer">
