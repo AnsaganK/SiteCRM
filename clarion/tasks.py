@@ -60,7 +60,7 @@ def check_links(html):
 def check_page(page_url):
     page = Page.objects.filter(url=page_url).first()
     content = get_soup(page.content)
-    check_links(content)
+    check_links(content) if content else None
     page.save()
 
 
