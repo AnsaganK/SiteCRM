@@ -77,6 +77,7 @@ def check_pages():
     for page in pages:
         print(f'Сейчас проверяю страницу {page.pk}: {page.name}')
         check_page(page.url)
+    print('Все страницы проверены')
     return 'Исправление ссылок сделано'
 
 
@@ -99,8 +100,6 @@ def update_page(pk, url):
 
 def detail_page(name, url):
     soup = get_soup(get_site(url))
-    if not soup:
-        return soup
     meta_data = get_meta_data(soup)
     try:
         content = soup.find_all('div', class_='art-post-inner')[-1]
