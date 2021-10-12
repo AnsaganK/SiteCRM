@@ -71,7 +71,7 @@ def check_page(page_url):
 
 @shared_task
 def check_pages():
-    sys.setrecursionlimit(2000)
+    sys.setrecursionlimit(5000)
     pages = Page.objects.exclude(url=None)
     print(f'Всего страниц {pages.count()}')
     for page in pages:
