@@ -192,6 +192,8 @@ def page_update(request, pk):
 def page_detail(request, url):
     print(base_url+url)
     page = Page.objects.filter(url=base_url+'/'+url).first()
+    if not page:
+        return render(request, '404.html')
     print(page)
     if request.method == 'POST':
         if request.user.reviews.filter(user__reviews__in=page.reviews.all()):
