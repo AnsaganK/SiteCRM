@@ -23,8 +23,18 @@ def get_site(url=base_url):
 
 
 def get_soup(response_text):
-    html = BS(response_text, 'lxml')
-    return html
+    if response_text:
+        html = BS(response_text, 'lxml')
+        return html
+    return None
+
+def get_meta_data(soup):
+    meta_data = ''
+    head = soup.find('head')
+    if head:
+        for i in head.find_all('meta'):
+            meta_data += str(i)
+    return meta_data
 
 # Перевод ссылок на данный сайт
 def create_or_get_page(name, url):
@@ -85,7 +95,7 @@ def detail_page(name, url):
     soup = get_soup(get_site(url))
     if not soup:
         return soup
-    meta_data = soup.find('head').find_all('meta')
+    meta_data = get_meta_data(soup)
     try:
         content = soup.find_all('div', class_='art-post-inner')[-1]
     except:
@@ -229,7 +239,7 @@ def get_categories(categories, parent_category=None):
 def get_page(page_url):
     site = get_site(page_url)
     soup = get_soup(site)
-    meta_data = soup.find('head').find_all('meta')
+    meta_data = get_meta_data(soup)
     try:
         content = soup.find('div', class_='art-post-body')
     except:
