@@ -1,3 +1,4 @@
+import sys
 from io import BytesIO
 
 from celery import shared_task
@@ -38,6 +39,8 @@ def get_meta_data(soup):
 
 # Перевод ссылок на данный сайт
 def create_or_get_page(name, url):
+    if '?' in url and Page.objects.filter(url=url.split('?')[0]).first():
+        return Page.objects.filter(url=url.split('?')[0]).first()
     if Page.objects.filter(url=url).first():
         return Page.objects.filter(url=url).first()
     page = detail_page(name, url)
@@ -51,7 +54,7 @@ def check_links(html):
     locale_links_count = 0
     for link_index in range(len(links)):
         link = links[link_index]
-        if '/' == link['href'][0]:
+        if '/' == link['href'][0] and '/mailto/' not in link['href']:
             locale_links_count += 1
             name = link['href'].split('/')[-1]
             create_or_get_page(name, base_url+link['href'])
@@ -66,6 +69,7 @@ def check_page(page_url):
 
 @shared_task
 def check_pages():
+    sys.setrecursionlimit(2000)
     pages = Page.objects.exclude(url=None)
     print(f'Всего страниц {pages.count()}')
     for page in pages:
