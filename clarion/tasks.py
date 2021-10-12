@@ -16,7 +16,7 @@ PAGES = []
 EQUAL_COUNT = 0
 
 def get_site(url=base_url):
-    r = requests.get(url)
+    r = requests.get(url, allow_redirects=False)
     if r.status_code == 200:
         return r.text
     return None
