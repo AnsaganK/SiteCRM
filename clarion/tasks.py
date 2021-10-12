@@ -30,6 +30,8 @@ def get_soup(response_text):
     return None
 
 def get_meta_data(soup):
+    if not soup:
+        return ''
     meta_data = ''
     head = soup.find('head')
     if head:
