@@ -56,7 +56,10 @@ def check_links(html):
     locale_links_count = 0
     for link_index in range(len(links)):
         link = links[link_index]
-        if '/' == link['href'][0] and '/mailto/' not in link['href']:
+        if '/' == link['href'][0] and \
+                link['href'][0].split('.')[-1] not in ['jpg', 'png', 'pdf'] and \
+                '/mailto/' not in link['href'] and \
+                'text/javascript' not in link['href'] :
             locale_links_count += 1
             name = link['href'].split('/')[-1]
             create_or_get_page(name, base_url+link['href'])
