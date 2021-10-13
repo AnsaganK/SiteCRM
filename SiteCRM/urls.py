@@ -12,8 +12,8 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [
-    path('', include('clarion.urls', namespace='clarion')),
     path('accounts/login/', acc.LoginView.as_view(), name='login'),
     path('accounts/logout/', acc.LogoutView.as_view(), name='logout'),
+    path('', include('clarion.urls', namespace='clarion')),
 ]
 
