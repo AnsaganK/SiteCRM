@@ -57,7 +57,7 @@ def check_links(html):
     for link_index in range(len(links)):
         link = links[link_index]
         if '/' == link['href'][0] and \
-                link['href'][0].split('.')[-1] not in ['jpg', 'png', 'pdf'] and \
+                link['href'][0].split('.')[-1].lower() not in ['jpg', 'png', 'pdf'] and \
                 '/mailto/' not in link['href'] and \
                 'text/javascript' not in link['href'] :
             locale_links_count += 1
@@ -218,6 +218,8 @@ def create_page(name, html_dict=None, url=None, category=None, img_url=None):
 
 
 def create_category(category_name, category_link=None, parent_category=None):
+    if Category.objects.filter(name=category_name).first():
+        return Category.objects.filter(name=category_name).first()
     category = Category.objects.create(name=category_name)
     category.save()
     if category_link:
