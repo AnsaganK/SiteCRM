@@ -28,6 +28,7 @@ urlpatterns = [
     path('page/commented/', views.commented_pages, name='commented_pages'),
     path('page/rating/', views.popular_pages, name='popular_pages'),
     path('page/search/', views.search, name='search'),
+    path('page/<int:pk>/detail', views.page_detail_pk, name='page_detail_pk'),
     path('page/<int:pk>/update', views.page_update, name='page_update'),
     path('page/<int:pk>/edit', views.page_edit, name='page_edit'),
     path('page/<int:pk>/delete/confirm', views.page_delete_confirm, name='page_delete_confirm'),

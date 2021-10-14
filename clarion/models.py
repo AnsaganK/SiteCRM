@@ -47,7 +47,9 @@ class Page(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('clarion:page_detail', args=[str(self.url).replace(f'{base_url}/', '')])
+        if self.url:
+            return reverse('clarion:page_detail', args=[str(self.url).replace(f'{base_url}/', '')])
+        return reverse('clarion:page_detail_pk', args=[str(self.pk)])
 
     def get_rating(self):
         if self.reviews.count():

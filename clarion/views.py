@@ -189,6 +189,15 @@ def page_update(request, pk):
     messages.success(request, 'Данные скоро изменятся, обновите страницу')
     return redirect(reverse('clarion:page_detail', args=[page.pk]))
 
+def page_detail_pk(request, pk):
+    page = Page.objects.filter(pk=pk).first()
+    if not page:
+        return render(request, '404.html')
+    return render(request, 'clarion/page/detail.html', {'page': page,
+                                                        'popular_pages': get_popular_pages(limit=4),
+                                                        'commented_pages': get_commented_pages(limit=4),
+                                                        'related_pages': get_related_pages(),})
+
 def page_detail(request, url):
     print(base_url+url)
     page = Page.objects.filter(url=base_url+'/'+url).first()
