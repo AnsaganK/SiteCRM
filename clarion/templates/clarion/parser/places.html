@@ -1,11 +1,36 @@
 {% extends 'clarion/base.html' %}
-
+{% load clarion_tags %}
 {% block title %}
     Объекты
 {% endblock %}
 
 {% block content %}
-    {% for place in places %}
-        <p><a href="{% url 'clarion:place_detail' place.slug %}">{{ place.name }}</a></p>
-    {% endfor %}
+    <div class="custom_cards" style="flex-direction: column">
+        {% for place in places|slice:":20" %}
+
+            <a href="{% url 'clarion:place_detail' place.slug %}" style="width: 80%; align-self: center">
+                <div class="custom_card" style="width: 100%">
+                    <img src="http://170.130.40.103{{ place.img }}" style="background-color: #9c9c9c; width: 150px !important; height: 150px !important;" alt="">
+                    <div class=card_content">
+                        <b>Название</b>: {{ place.name }}<br>
+                        <b>Рейтинг</b>: {{ place.rating }}<br>
+                        <b>Адрес</b>: {{ place.address }}<br>
+                        <b>Описание</b>: {{ place.get_meta_description|truncatechars:200 }}
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="letters" style="display: flex; flex-wrap: wrap;padding: 20px;justify-content: center">
+        {% for letter in letters %}
+            <div class="letter" style="width: 30%; min-width: 300px">
+                <hr>
+                <span style="color: cornflowerblue">{{ letter }}</span>
+                {% for place in places_letter|getValue:letter|getValue:'places' %}
+                    <p><a href="{% url 'clarion:place_detail' place.slug %}" class="hover_link">{{ place.name }}</a></p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
 {% endblock %}

@@ -369,13 +369,21 @@ def query_my(request):
 
 
 def get_places(url):
-    places = []
+    places = {}
     r = requests.get(url)
     if r.status_code == 200:
         try:
-            places = r.json()[0]['place']
+            places = r.json()['places']
+            letters = r.json()['letters']
+            places_letter = r.json()['places_letter']
+            places = {
+                'places': places,
+                'letters': letters,
+                'places_letter': places_letter,
+            }
+            return places
         except:
-            places = []
+            places = {}
     return places
 
 
@@ -383,8 +391,16 @@ def query_places(request, slug):
     username = admin_username
     url = parser_host + f'query/{slug}/places'
     print(url)
-    places = get_places(url)
-    return render(request, 'clarion/parser/places.html', {'places': places})
+    data = get_places(url)
+    print(data)
+    places = data['places'] if 'places' in data else []
+    letters = data['letters'] if 'letters' in data else []
+    places_letter = data['places_letter'] if 'places_letter' in data else []
+    return render(request, 'clarion/parser/places.html', {'places': places,
+                                                          'letters': letters,
+                                                          'places_letter': places_letter
+                                                          })
+
 
 def get_place(url):
     place = {}

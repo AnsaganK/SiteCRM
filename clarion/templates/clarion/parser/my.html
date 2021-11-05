@@ -4,24 +4,33 @@
     Мои запросы
 {% endblock %}
 
+{% block style %}
+    <style>
+    </style>
+{% endblock %}
+
 {% block content %}
-    <a href="{% url 'clarion:query_add' %}" class="btn btn-secondary">Добавить</a>
-    <table class="table">
-        <thead>
-        <tr>
-            <td>Название</td>
-            <td>Объектов</td>
-        </tr>
-        </thead>
-        <tbody>
+    <a href="{% url 'clarion:query_add' %}" class="btn btn-secondary" style="
+                                                        padding: 10px;
+                                                        background-color: #8fdaff;
+                                                        margin: 10px auto;
+                                                        display: block;
+                                                        width: fit-content;
+                                                        color: #686868;"
+    >Добавить</a>
+
+    <div class="custom_cards">
         {% for query in queries %}
-            <tr>
-                <td><a href="{% url 'clarion:query_places' query.slug %}">{{ query.name }}</a></td>
-                <td>{{ query.places_count }}</td>
-            </tr>
+
+            <a href="{% url 'clarion:query_places' query.slug %}">
+                <div class="custom_card">
+                    <img src="{{ query.base_img }}" alt="" width="150px" height="150px">
+                    <div class=card_content">
+                        Название: {{ query.name }}<br>
+                        Объектоа: {{ query.places_count }}
+                    </div>
+                </div>
+            </a>
         {% endfor %}
-
-        </tbody>
-    </table>
-
+    </div>
 {% endblock %}

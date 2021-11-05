@@ -63,3 +63,8 @@ def replaceIMG(content):
     if content:
         content = content.replace('src="/', f'src="{base_url}/')
     return content
+
+
+@register.filter(name='getValue')
+def getValue(dic, key):
+    return dic[key]
