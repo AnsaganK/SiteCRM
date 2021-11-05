@@ -1,14 +1,27 @@
 {% extends 'clarion/base.html' %}
 
 {% block title %}
-     Мои запросы
+    Мои запросы
 {% endblock %}
 
 {% block content %}
-    <a href="{% url 'clarion:query_add' %}">Добавить</a>
-    {{ queries }}
-    {% for query in queries %}
-        <a href="{% url 'clarion:query_places' query.slug %}">{{ query.name }}</a>
+    <a href="{% url 'clarion:query_add' %}" class="btn btn-secondary">Добавить</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <td>Название</td>
+            <td>Объектов</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for query in queries %}
+            <tr>
+                <td><a href="{% url 'clarion:query_places' query.slug %}">{{ query.name }}</a></td>
+                <td>{{ query.places_count }}</td>
+            </tr>
+        {% endfor %}
 
-    {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock %}
