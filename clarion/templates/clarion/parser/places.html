@@ -32,7 +32,7 @@
                          style="background-color: #9c9c9c; width: 150px !important; height: 150px !important;box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 16%), 0 0 0 1px rgb(10 10 10 / 20%);border-radius: 10px;" alt="">
                     <div class=card_content">
                         <b>Название</b>: {{ place.name }}<br>
-                        <b>Рейтинг</b>: {{ place.rating }}<br>
+                        <b>Рейтинг</b>: {{ place.rating }} ({{ place.rating_user_count }})<br>
                         <b>Адрес</b>: {{ place.address }}<br>
                         <b>Описание</b>: {{ place.get_meta_description|truncatechars:200 }}
                     </div>
