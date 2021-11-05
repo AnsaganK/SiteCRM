@@ -59,7 +59,6 @@ class Page(models.Model):
             return rating
         return 0
 
-
     class Meta:
         verbose_name = 'Страница'
         verbose_name_plural = 'Страницы'

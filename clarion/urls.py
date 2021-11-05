@@ -33,6 +33,13 @@ urlpatterns = [
     path('page/<int:pk>/edit', views.page_edit, name='page_edit'),
     path('page/<int:pk>/delete/confirm', views.page_delete_confirm, name='page_delete_confirm'),
     path('page/<int:pk>/delete/', views.page_delete, name='page_delete'),
-    path('<path:url>', views.page_detail, name='page_detail'),
 ]
 
+urlpatterns += [
+    path('query/add', views.query_add, name="query_add"),
+    path('query/', views.query_add, name="query"),
+]
+
+urlpatterns += [
+    path('<path:url>', views.page_detail, name='page_detail'),
+]

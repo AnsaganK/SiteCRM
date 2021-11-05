@@ -1,3 +1,4 @@
+import requests
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -6,6 +7,7 @@ from django.db.models import Count, Sum, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 
+from constants import admin_username, parser_host
 from .forms import ReviewForm, UserCreateForm, PageForm, UserForm, CategoryForm
 from .models import Category, Page
 from .tasks import parser_category, parser_pages, update_page, check_pages, base_url
@@ -299,3 +301,51 @@ def check_page_links(request):
     messages.success(request, 'Исправление ссылок начинается')
     check_pages.delay()
     return redirect('clarion:index')
+
+
+
+# GoogleParser
+def my_queries(request, id):
+    username = admin_username
+
+def my_place(request, id):
+    username = admin_username
+
+
+def start_parser(username, query_name, query_page):
+    url = parser_host + f'query/add?username={username}&query_name={query_name}&query_page={query_page}'
+    r = requests.get(url)
+    if r.status_code == 200:
+        try:
+            return r.json()['message']
+        except:
+            pass
+    return "Ошибка"
+
+
+def query_add(request):
+    username = admin_username
+    if request.method == 'POST':
+        post = request.POST
+        query_name = post['query_name']
+        try:
+            not_all = post['not_all']
+        except:
+            not_all = None
+        if not_all:
+            try:
+                query_page = request.POST['query_page']
+                query_page = int(query_page)
+            except:
+                query_page = 1
+        else:
+            query_page = 0
+
+        start = start_parser(username, query_name, query_page)
+        messages.success(request, start)
+        print(query_name)
+        print(not_all)
+        print(query_page)
+        return redirect('clarion:query_add')
+    return render(request, 'clarion/parser/form.html')
+
