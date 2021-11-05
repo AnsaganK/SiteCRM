@@ -5,7 +5,60 @@
 {% endblock %}
 
 {% block content %}
-    {{ place }}
-    {{ place.name }}
-    <p>{{ place.slug }}</p>
+    <div class="box" id="detail_data" style="width: 80%; margin: auto; display: block; padding: 10px">
+        <h4 style="color: #64b5f6; text-align: center">{{ place.name }} <br><span
+                style="color:grey; font-size: 11px; ">{{ place.date_update }}</span></h4>
+        <div style="display:flex; flex-direction: column">
+
+            <img src="http://170.130.40.103{{ place.img }}" class="card" alt=""
+                 style="height: 100% !important; width: 500px;margin-right: 10px;box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 16%), 0 0 0 1px rgb(10 10 10 / 20%);border-radius: 10px;
+                        display: block;margin:auto;
+">
+            <div>
+                <p><span>Название:</span> <span>{{ place.name }}</span></p>
+                <p><span>Адрес:</span> <span>{{ place.address }}</span></p>
+                <p><span>Сайт:</span> <span><a
+                        href="http://{{ place.site }}">{{ place.site }}</a></span></p>
+                <p><span>Рейтинг:</span> <span>{{ place.rating }} (<span
+                        style="color: #9c9c9c">{{ place.rating_user_count }}</span>)</span></p>
+                </p>
+                <p><span>Ссылка GoogleMaps:</span> <span><a href="https://maps.google.com/?cid={{ place.cid }}"
+                                                            target="_blank">https://maps.google.com/?cid={{ place.cid }}</a></span>
+                </p>
+                <p><span>Телефон:</span> <span>{{ place.phone_number }}</span></p>
+                <p><span>Описание:</span> <span>{{ place.get_meta_description }}</span></p>
+                <section class="">
+                    <div class="is-clipped">
+                        <div id="slider" style="display: flex; justify-content: space-between;">
+                            {% for photo in place.photos %}
+                                <div class="card">
+                                    <div class="card-image">
+                                        <figure class="image is-16by9 is-covered">
+                                            <img src="http://170.130.40.103{{ photo.img }}" alt=""
+                                                 style="width: 200px !important; height: 200px !important;
+                                                        border-radius: 10px;
+                                            ">
+                                        </figure>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+                <h4 class="block_title">Отзывы</h4>
+                {% for review in place.reviews_google %}
+                    <div class="columns is-centered">
+                        <div class="column is-8 box">
+                            <span class="author"
+                                  style="display: flex; justify-content: space-between; width:auto;color: #1b1b1b">{{ review.author_name }} <span>{{ review.rating|safe }}/5</span></span>
+                            <span class="text">{{ review.text }}</span>
+                        </div>
+                    </div>
+                    <hr>
+                {% empty %}
+                    <p class="empty">Пока никто не оставил отзывов</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

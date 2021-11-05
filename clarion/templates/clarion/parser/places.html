@@ -4,13 +4,32 @@
     Объекты
 {% endblock %}
 
+{% block style %}
+    <style>
+        .rating_block {
+            background-color: gold;
+            padding: 10px 20px;
+            position: absolute;
+            margin-left: 10px;
+            color: whitesmoke;
+            box-sizing: border-box;
+            margin-top: 10px;
+            border-top-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="custom_cards" style="flex-direction: column">
         {% for place in places|slice:":20" %}
 
             <a href="{% url 'clarion:place_detail' place.slug %}" style="width: 80%; align-self: center">
+                <span class="rating_block">{{ place.rating }}</span>
                 <div class="custom_card" style="width: 100%">
-                    <img src="http://170.130.40.103{{ place.img }}" style="background-color: #9c9c9c; width: 150px !important; height: 150px !important;" alt="">
+
+                    <img src="http://170.130.40.103{{ place.img }}"
+                         style="background-color: #9c9c9c; width: 150px !important; height: 150px !important;box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 16%), 0 0 0 1px rgb(10 10 10 / 20%);border-radius: 10px;" alt="">
                     <div class=card_content">
                         <b>Название</b>: {{ place.name }}<br>
                         <b>Рейтинг</b>: {{ place.rating }}<br>
