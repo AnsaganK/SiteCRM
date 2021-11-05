@@ -310,8 +310,7 @@
                                 <!-- Collect the nav links, forms, and other content for toggling -->
                                 <div class="collapse navbar-collapse" id="#navbar-collapse-1">
                                     <ul class="nav navbar-nav main-nav">
-                                        <li class="active"><a href="{% url 'clarion:query_add' %}">Добавить
-                                            категорию</a></li>
+                                        <li class="active"><a href="{% url 'clarion:query_my' %}">Категории</a></li>
 
                                         {% for category in categories|slice:"0:3" %}
                                             <li class="active"><a

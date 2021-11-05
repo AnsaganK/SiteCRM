@@ -349,3 +349,19 @@ def query_add(request):
         return redirect('clarion:query_add')
     return render(request, 'clarion/parser/form.html')
 
+def get_queries(url):
+    queries = []
+    r = requests.get(url)
+    if r.status_code == 200:
+        try:
+            queries = r.json()
+        except:
+            queries = []
+    return queries
+
+
+def query_my(request):
+    username = admin_username
+    url = parser_host + f'/query/{username}'
+    queries = get_queries(url)
+    return render(request, 'clarion/parser/my.html', {'queries': queries})

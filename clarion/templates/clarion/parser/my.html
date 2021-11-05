@@ -1,0 +1,13 @@
+{% extends 'clarion/base.html' %}
+
+{% block title %}
+     Мои запросы
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'clarion:query_add' %}">Добавить</a>
+    {% for query in queries %}
+        {{ query.name }}
+
+    {% endfor %}
+{% endblock %}
