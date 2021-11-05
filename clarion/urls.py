@@ -38,7 +38,8 @@ urlpatterns = [
 urlpatterns += [
     path('query/add', views.query_add, name="query_add"),
     path('query/my', views.query_my, name="query_my"),
-    path('query/', views.query_add, name="query"),
+    path('query/<slug:slug>/places', views.query_places, name="query_places"),
+    path('place/<slug:slug>', views.place_detail, name="place_detail"),
 ]
 
 urlpatterns += [

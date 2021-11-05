@@ -1,0 +1,11 @@
+{% extends 'clarion/base.html' %}
+
+{% block title %}
+    {{ place.name }}
+{% endblock %}
+
+{% block content %}
+    {{ place }}
+    {{ place.name }}
+    <p>{{ place.slug }}</p>
+{% endblock %}

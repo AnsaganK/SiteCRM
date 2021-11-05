@@ -1,0 +1,11 @@
+{% extends 'clarion/base.html' %}
+
+{% block title %}
+    Объекты
+{% endblock %}
+
+{% block content %}
+    {% for place in places %}
+        <p><a href="{% url 'clarion:place_detail' place.slug %}">{{ place.name }}</a></p>
+    {% endfor %}
+{% endblock %}

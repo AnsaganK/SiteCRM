@@ -6,8 +6,9 @@
 
 {% block content %}
     <a href="{% url 'clarion:query_add' %}">Добавить</a>
+    {{ queries }}
     {% for query in queries %}
-        {{ query.name }}
+        <a href="{% url 'clarion:query_places' query.slug %}">{{ query.name }}</a>
 
     {% endfor %}
 {% endblock %}

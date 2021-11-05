@@ -362,6 +362,43 @@ def get_queries(url):
 
 def query_my(request):
     username = admin_username
-    url = parser_host + f'/query/{username}'
+    url = parser_host + f'query/{username}'
+    print(url)
     queries = get_queries(url)
     return render(request, 'clarion/parser/my.html', {'queries': queries})
+
+
+def get_places(url):
+    places = []
+    r = requests.get(url)
+    if r.status_code == 200:
+        try:
+            places = r.json()[0]['place']
+        except:
+            places = []
+    return places
+
+
+def query_places(request, slug):
+    username = admin_username
+    url = parser_host + f'query/{slug}/places'
+    print(url)
+    places = get_places(url)
+    return render(request, 'clarion/parser/places.html', {'places': places})
+
+def get_place(url):
+    place = {}
+    r = requests.get(url)
+    if r.status_code == 200:
+        try:
+            place = r.json()
+        except:
+            place = []
+    return place
+
+
+def place_detail(reqeust, slug):
+    url = parser_host + f'place/{slug}'
+    print(url)
+    place = get_place(url)
+    return render(reqeust, 'clarion/parser/place.html', {'place': place})
