@@ -191,40 +191,47 @@ def page_update(request, pk):
     messages.success(request, 'Данные скоро изменятся, обновите страницу')
     return redirect(reverse('clarion:page_detail', args=[page.pk]))
 
+
+def save_review(request, page):
+    if request.user.reviews.filter(user__reviews__in=page.reviews.all()):
+        messages.success(request, 'Не более одного комментария')
+        return redirect(page.get_absolute_url())
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.user = request.user
+        review.page = page
+        review.save()
+        messages.success(request, 'Ваш отзыв сохранен')
+    else:
+        print(form.errors)
+        show_form_errors(request, form.errors)
+    return redirect(page.get_absolute_url())
+
+
 def page_detail_pk(request, pk):
     page = Page.objects.filter(pk=pk).first()
     if not page:
         return render(request, '404.html')
+    if request.method == 'POST':
+        return save_review(request, page)
     return render(request, 'clarion/page/detail.html', {'page': page,
                                                         'popular_pages': get_popular_pages(limit=4),
                                                         'commented_pages': get_commented_pages(limit=4),
                                                         'related_pages': get_related_pages(),})
 
+
 def page_detail(request, url):
-    print(base_url+url)
     page = Page.objects.filter(url=base_url+'/'+url).first()
     if not page:
         return render(request, '404.html')
-    print(page)
     if request.method == 'POST':
-        if request.user.reviews.filter(user__reviews__in=page.reviews.all()):
-            messages.success(request, 'Не более одного комментария')
-            return redirect(reverse('clarion:page_detail', args=[url]))
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.user = request.user
-            review.page = page
-            review.save()
-            messages.success(request, 'Ваш отзыв сохранен')
-        else:
-            print(form.errors)
-            show_form_errors(request, form.errors)
-        return redirect(page.get_absolute_url())
+        return save_review(request, page)
     return render(request, 'clarion/page/detail.html', {'page': page,
                                                         'popular_pages': get_popular_pages(limit=4),
                                                         'commented_pages': get_commented_pages(limit=4),
                                                         'related_pages': get_related_pages(),})
+
 
 def popular_pages(request):
     title = 'Top popular pages'
@@ -252,6 +259,7 @@ def commented_pages(request):
     except EmptyPage:
         pages = paginator.page(paginator.num_pages)
     return render(request, 'clarion/page/top_list.html', {'title': title,'pages': pages})
+
 
 def search(request):
     query = ''
@@ -303,10 +311,10 @@ def check_page_links(request):
     return redirect('clarion:index')
 
 
-
 # GoogleParser
 def my_queries(request, id):
     username = admin_username
+
 
 def my_place(request, id):
     username = admin_username
